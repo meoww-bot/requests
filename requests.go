@@ -1,4 +1,4 @@
-/* Copyright（2） 2018 by  asmcos .
+/* Copyright（2） 2018 by  meoww-bot .
 Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -56,8 +56,9 @@ type Files map[string]string // name ,filename
 
 // {username,password}
 type Auth []string
+type InsecureSkipVerify bool
 
-func Requests() *Request {
+func Requests(args ...interface{}) *Request {
 
 	req := new(Request)
 
@@ -70,6 +71,18 @@ func Requests() *Request {
 	}
 	req.Header = &req.httpreq.Header
 	req.httpreq.Header.Set("User-Agent", "Go-Requests "+VERSION)
+
+	for _, arg := range args {
+		switch a := arg.(type) {
+		case InsecureSkipVerify:
+			if a == true {
+				tr := &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				}
+				req.Client = &http.Client{Transport: tr}
+			}
+		}
+	}
 
 	req.Client = &http.Client{}
 
@@ -142,12 +155,11 @@ func (req *Request) Get(origurl string, args ...interface{}) (resp *Response, er
 		return nil, err
 	}
 
-
 	resp = &Response{}
 	resp.R = res
 	resp.req = req
 
-    resp.Content()
+	resp.Content()
 	defer res.Body.Close()
 
 	resp.ResponseDebug()
@@ -232,9 +244,8 @@ func (req *Request) SetTimeout(n time.Duration) {
 	req.Client.Timeout = time.Duration(n * time.Second)
 }
 
-
-func (req *Request) Close( ) {
-    req.httpreq.Close = true
+func (req *Request) Close() {
+	req.httpreq.Close = true
 }
 
 func (req *Request) Proxy(proxyurl string) {
@@ -274,9 +285,9 @@ func (resp *Response) Content() []byte {
 
 	var err error
 
-    if len(resp.content) > 0{
-        return resp.content
-    }
+	if len(resp.content) > 0 {
+		return resp.content
+	}
 
 	var Body = resp.R.Body
 	if resp.R.Header.Get("Content-Encoding") == "gzip" && resp.req.Header.Get("Accept-Encoding") != "" {
@@ -413,13 +424,12 @@ func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Respons
 		return nil, err
 	}
 
-
 	resp = &Response{}
 	resp.R = res
 	resp.req = req
 
-    resp.Content()
-    defer res.Body.Close()
+	resp.Content()
+	defer res.Body.Close()
 	resp.ResponseDebug()
 	return resp, nil
 }
@@ -428,7 +438,7 @@ func (req *Request) Post(origurl string, args ...interface{}) (resp *Response, e
 
 	req.httpreq.Method = "POST"
 
-    //set default
+	//set default
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// set params ?a=b&b=c
@@ -496,13 +506,12 @@ func (req *Request) Post(origurl string, args ...interface{}) (resp *Response, e
 		return nil, err
 	}
 
-
 	resp = &Response{}
 	resp.R = res
 	resp.req = req
 
-    resp.Content()
-    defer res.Body.Close()
+	resp.Content()
+	defer res.Body.Close()
 
 	resp.ResponseDebug()
 	return resp, nil

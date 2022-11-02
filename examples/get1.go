@@ -1,10 +1,9 @@
 package main
 
-import "github.com/asmcos/requests"
+import "github.com/meoww-bot/requests"
 
+func main() {
 
-func main (){
-
-        resp,_ := requests.Get("http://go.xiulian.net.cn")
-        println(resp.Text())
+	resp, _ := requests.Get("http://go.xiulian.net.cn")
+	println(resp.Text())
 }

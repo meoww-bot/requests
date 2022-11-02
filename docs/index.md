@@ -6,7 +6,7 @@
 ```
 package main
 
-import "github.com/asmcos/requests"
+import "github.com/meoww-bot/requests"
 
 
 func main (){

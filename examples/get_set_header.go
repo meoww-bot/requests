@@ -1,14 +1,13 @@
 package main
 
-import "github.com/asmcos/requests"
+import "github.com/meoww-bot/requests"
 
+func main() {
 
-func main (){
+	req := requests.Requests()
 
-        req := requests.Requests()
+	resp, _ := req.Get("http://go.xiulian.net.cn", requests.Header{"Referer": "http://www.jeapedu.com"})
 
-        resp,_ := req.Get("http://go.xiulian.net.cn",requests.Header{"Referer":"http://www.jeapedu.com"})
-
-        println(resp.Text())
+	println(resp.Text())
 
 }
