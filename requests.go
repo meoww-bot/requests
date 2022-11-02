@@ -72,19 +72,17 @@ func Requests(args ...interface{}) *Request {
 	req.Header = &req.httpreq.Header
 	req.httpreq.Header.Set("User-Agent", "Go-Requests "+VERSION)
 
+	req.Client = &http.Client{}
+
 	for _, arg := range args {
-		switch a := arg.(type) {
-		case InsecureSkipVerify:
-			if a == true {
-				tr := &http.Transport{
-					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-				}
-				req.Client = &http.Client{Transport: tr}
+		switch arg.(type) {
+		case *InsecureSkipVerify:
+			tr := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
+			req.Client = &http.Client{Transport: tr}
 		}
 	}
-
-	req.Client = &http.Client{}
 
 	// auto with Cookies
 	// cookiejar.New source code return jar, nil
